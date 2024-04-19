@@ -8,7 +8,9 @@ from util import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--device", type=int, default=0)
+parser.add_argument('--use_static_image_mode', action='store_true')
 args = parser.parse_args()
+use_static_image_mode = args.use_static_image_mode
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -20,6 +22,7 @@ read = False
 # For webcam input:
 cap = cv2.VideoCapture(args.device)
 with mp_hands.Hands(
+        static_image_mode=use_static_image_mode,
         max_num_hands=2,
         model_complexity=0,
         min_detection_confidence=0.7,
