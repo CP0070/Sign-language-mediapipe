@@ -1,40 +1,40 @@
-from pymongo import MongoClient
+import socket
+import time
+import logging
+import os
 
-# Replace with your cloud database connection details (same as Raspberry Pi script)
-DATABASE_URL = "ongodb+srv://SLRS-login:<SLRS@MSRIT@123>@cluster2.yjeqc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster2"
-DATABASE_NAME = "SLRS1"
-COLLECTION_NAME = "sensor_data"
+# Set up basic logging
+logging.basicConfig(level=logging.INFO)
 
-# Connect to MongoDB
-# Function to connect to MongoDB
-def connect_to_db():
-    client =MongoClient(DATABASE_URL)
-    db = client[DATABASE_NAME]
-    collection = db[COLLECTION_NAME]
-    return collection
+# Use environment variables for configuration or default to specified values
+HOST = os.getenv('192.168.1.16', 'localhost')  # Default Raspberry Pi IP
+PORT = int(os.getenv('SENSOR_PORT', '22'))  # Default port
 
-# Function to insert sensor data
-def insert_sensor_data(timestamp, flex1, flex2, flex3, flex4, flex5, acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z):
-    collection = connect_to_db()
-    data = {
-        "timestamp": timestamp,
-        "flex": {
-            "flex1": flex1,
-            "flex2": flex2,
-            "flex3": flex3,
-            "flex4": flex4,
-            "flex5": flex5
-        },
-        "acceleration": {
-            "x": acc_x,
-            "y": acc_y,
-            "z": acc_z
-        },
-        "gyroscope": {
-            "x": gyro_x,
-            "y": gyro_y,
-            "z": gyro_z
-        }
-    }
-    collection.insert_One(data)
-    print("Data inserted successfully!")
+def receive_sensor_data():
+    """
+    Connects to the server and continuously receives sensor data.
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.connect((HOST, PORT))
+            logging.info(f"Connected to {HOST} on port {PORT}")
+
+            while True:
+                # Receive sensor data from Raspberry Pi
+                data = s.recv(1024).decode()
+                if not data:
+                    logging.info("No data received. Connection may have been closed.")
+                    break
+                print(data.strip())  # Print the received sensor reading
+                # Further processing and storing of the data can be done here
+                time.sleep(1)  # Adjust interval for receiving updates
+
+        except socket.error as e:
+            logging.error(f"Socket error: {e}")
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+        finally:
+            logging.info("Connection closed")
+
+if __name__ == "__main__":
+    receive_sensor_data()
