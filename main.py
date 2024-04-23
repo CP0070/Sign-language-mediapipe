@@ -127,41 +127,44 @@ def main():
 
 
                     confidence, hand_sign_id = keypoint_classifier(pre_processed_landmark_list)
-                    # Validate the hand_sign_id before using it to access labels
-                    if 0 <= hand_sign_id < len(keypoint_classifier_labels):
-                        hand_sign_text = keypoint_classifier_labels[hand_sign_id]
-                        info_text = hand_sign_text if confidence > 0.75 else None
-                    else:
-                        print(f"Warning: hand_sign_id {hand_sign_id} is out of range.")
-                        info_text = None  # Safe fallback
 
-                    info_text = hand_sign_text
-                    if hand_sign_id == 2:  # Point gesture
+                    if hand_sign_id == 1:
                         point_history.append(landmark_list[8])
                     else:
-                        point_history.append([0, 0])
+                        point_history.append([0,0])
 
                     if (confidence > 0.75):
-                        info_text = keypoint_classifier_labels[hand_sign_id - 1]
+                        info_text = keypoint_classifier_labels[hand_sign_id-1]
                     else:
                         info_text = None
-                    image = draw_info(image, hand_landmarks, info_text)
-                    image = draw_landmarks(image,landmark_list)
-                    #print(info_text)
-                    gesture_detected = info_text
-                    if gesture_detected and time.time() - last_gesture_time > gesture_cooldown:
-                        accumulated_gestures.append(gesture_detected)
-                        last_gesture_time = time.time()
 
                     # Finger gesture classification
                     finger_gesture_id = 0
                     point_history_len = len(pre_processed_point_history_list)
                     if point_history_len == (history_length * 2):
-                        finger_gesture_id = point_history_classifier(
-                            pre_processed_point_history_list)
+                        finger_gesture_id = point_history_classifier(pre_processed_point_history_list)
 
                     finger_gesture_history.append(finger_gesture_id)
                     most_common_fg_id = Counter(finger_gesture_history).most_common()
+
+                    image = draw_info(image, hand_landmarks, info_text)
+                    image = draw_landmarks(image, landmark_list)
+                    image = draw_info_text(
+                        image,point_history_classifier_labels[most_common_fg_id[0][0]] )
+
+
+
+
+
+
+                    #print(info_text)
+                    #accumulation
+                    gesture_detected = info_text
+                    if gesture_detected and time.time() - last_gesture_time > gesture_cooldown:
+                        accumulated_gestures.append(gesture_detected)
+                        last_gesture_time = time.time()
+
+
 
 
 
@@ -407,6 +410,17 @@ def draw_point_history(image, point_history):
                       (152, 251, 152), 2)
 
     return image
+
+def draw_info_text(image,finger_gesture_text):
+    if finger_gesture_text != "":
+        cv2.putText(image, "Finger Gesture:" + finger_gesture_text, (10, 60),
+                   cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), 4, cv2.LINE_AA)
+        cv2.putText(image, "Finger Gesture:" + finger_gesture_text, (10, 60),
+                   cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
+                   cv2.LINE_AA)
+
+    return image
+
 
 
 
