@@ -1,32 +1,33 @@
 import socket
-import asyncio
-import json
 
-async def receive_sensor_data():
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-        sock.bind(('0.0.0.0', 2222))
-        print("Client is up and listening...")
-        while True:
-            data, _ = sock.recvfrom(4096)
-            sensor_data = json.loads(data.decode('utf-8'))
-            print("Received data:")
-            for key, value in sensor_data.items():
-                if isinstance(value, dict):
-                    print(f"{key}:")
-                    for subkey, subvalue in value.items():
-                        print(f"  {subkey}: {subvalue}")
-                else:
-                    print(f"{key}: {value}")
-            await asyncio.sleep(0)  # Yield control to allow other tasks
+def client_program():
+    # Create a socket object
+    s = socket.socket()
 
-def main():
-    loop = asyncio.get_event_loop()
+    # Define the port on which you want to connect (match this with the server's port)
+    port = 12345
+
+    # Connect to the server on local computer
+    server_ip = '192.168.1.9'  # Ensure this is the IP where the server is running
+    s.connect((server_ip, port))
+
     try:
-        loop.run_until_complete(receive_sensor_data())
-    except KeyboardInterrupt:
-        print("Client shutting down...")
+        while True:
+            # Receive data from the server
+            data = s.recv(2048)  # You might want to adjust the buffer size if needed
+            if not data:
+                print("No more data from server.")
+                break  # Exit if no data is received, indicating server might have closed the connection
+
+            # Decode and print the data
+            print("Received sensor data:\n", data.decode('utf-8'))
+
+    except Exception as e:
+        print("An error occurred:", str(e))
     finally:
-        loop.close()
+        # Close the connection
+        s.close()
+        print("Connection closed.")
 
 if __name__ == "__main__":
-    main()
+    client_program()
