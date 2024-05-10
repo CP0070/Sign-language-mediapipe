@@ -12,7 +12,7 @@ if "page" not in st.session_state or st.session_state["page"]!='wordpage':
     st.session_state["page"] = 'wordpage'
 
 
-conn = sqlite3.connect("signlingo.db")
+conn = sqlite3.connect("SignSense.db")
 c = conn.cursor()
 
 current_user = st.session_state["current_user"]
@@ -29,7 +29,7 @@ if "word" not in st.session_state:
 
 
 WORD_LIST = [
-    "CODE",
+    "MSRIT",
     "DATA",
     "LEARN",
     "TEST",

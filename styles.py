@@ -1,5 +1,6 @@
 import math
 
+
 def page_setup():
     return """
     <style>
@@ -26,7 +27,7 @@ def page_setup():
 
         /* add logo in navbar */
         [data-testid="stSidebar"] {
-            background-image: url(https://i.imgur.com/eelyBU4.png);
+            background-image: url(https://github.com/namratha-vj/os-project/assets/124687677/d0ca797a-8f20-4bc0-bde2-3a63937f2d2f);
             background-repeat: no-repeat;
             padding-top: 50px;
             background-position: 50px 50px;
@@ -54,6 +55,7 @@ def page_setup():
     </style>
     """
 
+
 def hide_navbar():
     return """
     <style>
@@ -63,7 +65,8 @@ def hide_navbar():
         </style>
     """
 
-def unhide_nav_bar() :
+
+def unhide_nav_bar():
     return """
     <style>
         .st-emotion-cache-j7qwjs {
@@ -72,7 +75,8 @@ def unhide_nav_bar() :
         </style>
     """
 
-def page_with_webcam_video() :
+
+def page_with_webcam_video():
     return """
         <style>
 
@@ -185,9 +189,10 @@ def page_with_webcam_video() :
             margin-bottom: 0px;
             font-size: 25px;
         }
-    
+
         </style>
     """
+
 
 def profile():
     return """
@@ -228,6 +233,7 @@ text-decoration: none;
 </style>
 
 """
+
 
 def letterprogress():
     return """

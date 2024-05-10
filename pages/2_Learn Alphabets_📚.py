@@ -15,7 +15,7 @@ if "page" not in st.session_state or st.session_state["page"]!='learnpage':
     st.session_state["page"] = 'learnpage'
     cap = cv2.VideoCapture(cv2.CAP_DSHOW)
 
-conn = sqlite3.connect("signlingo.db")
+conn = sqlite3.connect("SignSense.db")
 c = conn.cursor()
 
 current_user = st.session_state["current_user"]

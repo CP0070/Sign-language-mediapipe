@@ -14,7 +14,7 @@ if "page" not in st.session_state:
 st.session_state["page"] = "profilepage"
 
 # Connect to the SQLite database
-conn = sqlite3.connect("signlingo.db")
+conn = sqlite3.connect("SignSense.db")
 
 # Create a cursor object
 cursor = conn.cursor()
