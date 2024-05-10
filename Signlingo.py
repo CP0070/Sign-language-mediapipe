@@ -5,7 +5,7 @@ import json
 import sqlite3
 
 conn = sqlite3.connect(
-    "asl-streamlit-signlingo/signlingo.db"
+    "signlingo.db"
 )
 
 c = conn.cursor()
