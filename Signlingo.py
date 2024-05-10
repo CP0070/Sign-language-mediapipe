@@ -4,37 +4,35 @@ from styles import page_setup,hide_navbar,unhide_nav_bar
 import json
 import sqlite3
 
-conn = sqlite3.connect(
-    "signlingo.db"
-)
+# Database connection
+def get_db_connection():
+    return sqlite3.connect("signlingo.db")
 
-c = conn.cursor()
+# Initialize database
+def init_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS Profile (
+                        username TEXT PRIMARY KEY,
+                        name TEXT,
+                        email_id TEXT
+                    )''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS Alphabet (
+                        username TEXT,
+                        letter TEXT,
+                        PRIMARY KEY (username, letter),
+                        FOREIGN KEY(username) REFERENCES Profile(username)
+                    )''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS Words (
+                        username TEXT,
+                        word TEXT,
+                        PRIMARY KEY (username, word),
+                        FOREIGN KEY(username) REFERENCES Profile(username)
+                    )''')
+    conn.commit()
+    conn.close()
 
-c.execute('''CREATE TABLE IF NOT EXISTS Profile (
-                    username TEXT PRIMARY KEY,
-                    name TEXT,
-                    email_id TEXT
-                )''')
-
-c.execute(
-    """CREATE TABLE IF NOT EXISTS Alphabet (
-                    username TEXT,
-                    letter TEXT,
-                    PRIMARY KEY (username, letter),
-                    FOREIGN KEY(username) REFERENCES User(username)
-                )"""
-)
-
-c.execute(
-    """CREATE TABLE IF NOT EXISTS Words (
-                    username TEXT,
-                    word TEXT,
-                    PRIMARY KEY (username, word),
-                    FOREIGN KEY(username) REFERENCES User(username)
-                )"""
-)
-
-conn.commit()
+init_db()
 
 st.markdown(page_setup(), unsafe_allow_html=True)
 st.markdown(hide_navbar(), unsafe_allow_html=True)
@@ -62,19 +60,19 @@ def get_email(self):
             if user["username"] == current_user:
                 return user["email"]
 
-def add_profile_to_database(current_user):
+def add_profile_to_database(user_info):
+    conn = None
     try:
-        conn = sqlite3.connect("asl-streamlit-signlingo/signlingo.db")
-        with conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                """INSERT INTO Profile (username, name, email_id)
-                                VALUES (?, ?, ?)""",
-                (current_user["username"], current_user["name"], current_user["email"]),
-            )
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            """INSERT INTO Profile (username, name, email_id)
+                VALUES (?, ?, ?)""",
+            (user_info["username"], user_info["name"], user_info["email"]),
+        )
+        conn.commit()
     except Exception as e:
         print(f"Error occurred: {e}")
-        # Log the exception or handle it appropriately
     finally:
         if conn:
             conn.close()
