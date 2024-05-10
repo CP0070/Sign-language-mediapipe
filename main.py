@@ -85,9 +85,9 @@ def main():
     with mp_hands.Hands(
             static_image_mode=use_static_image_mode,
             max_num_hands=2,
-            model_complexity=0,
-            min_detection_confidence=0.75,
-            min_tracking_confidence=0.5) as hands:
+            model_complexity=1,
+            min_detection_confidence=0.8,
+            min_tracking_confidence=0.6) as hands:
 
 
         while cap.isOpened():
