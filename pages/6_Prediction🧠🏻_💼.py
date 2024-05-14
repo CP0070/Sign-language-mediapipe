@@ -28,7 +28,7 @@ def main():
         This app allows you to predict hand gestures using trained models. Fun fact: Did you know that hand gestures
         can convey emotions, commands, and even cultural meanings?
 
-        Choose an option below:
+        Let's get started! 🚀
         """
     )
 
@@ -36,16 +36,18 @@ def main():
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        if st.button("🔮 Predict"):
-            demo()
-        elif st.button("🧤 Gloves"):
-            monitor_sensor_data()
-        # Define functions for Predict and Gloves options
+        predict = st.button("🔮 Predict")
+        gloves_on = st.toggle("🧤 Gloves on")
 
     with col2:
         # Display an image showing examples of hand gestures
-        st.image("https://github.com/githubhosting/ds/assets/126514044/125a0609-2cc6-49aa-9578-b8fe6cdca321", caption="Examples of Hand Gestures",width=400)
+        st.image("https://github.com/githubhosting/ds/assets/126514044/125a0609-2cc6-49aa-9578-b8fe6cdca321", caption="Examples of Hand Gestures", width=400)
 
+    if predict:
+        demo()
+
+    if gloves_on:
+        monitor_sensor_data()
 def predict_gestures():
     st.write("Running prediction...")
     process = subprocess.Popen(["python", "main.py"], stdout=subprocess.PIPE)

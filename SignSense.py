@@ -116,41 +116,106 @@ if logged_in:
 
     st.markdown(unhide_nav_bar(), unsafe_allow_html=True)
     # Display other content
-    st.write("# Welcome to SignSense! 👋")
+    # st.write("# Welcome to SignSense! 👋")
+    st.write("<h1 style='font-size: 55px; color: #fff;'>Welcome to SignSense! 👋</h1>", unsafe_allow_html=True)
+
     # Other content...
+    # st.markdown(
+    #     """
+    # <div class="section">
+    #     <a class="link" href="About_Us">About</a> |
+    #     <a class="link" href="#features">Features</a> |
+    #     <a class="link" href="#contact">Contact</a>
+    # </div>
+    #
+    # <div class="section">
+    #     <h2 class="header">Master Sign Language Effortlessly</h2>
+    #     <p>SignSense is an innovative web application designed for individuals who are mute or communicate primarily through sign language. Similar to popular language learning platforms like DuoLingo, SignSense aims to provide an interactive and engaging way for users to learn and practice sign language.</p>
+    #
+    # </div>
+    #
+    # <div class="section">
+    #     <h2 class="header">About SignSense</h2>
+    #     <p>SignSense is revolutionizing the way we learn and practice sign language. Powered by cutting-edge technology, SignSense utilizes OpenCV for image processing and MediaPipe action detection, ensuring an accurate and seamless learning experience.</p>
+    # </div>
+    #
+    # <div class="section">
+    #     <h2 class="header">Features</h2>
+    #     <ul>
+    #         <li>Interactive lessons</li>
+    #         <li>Real-time feedback</li>
+    #         <li>Engaging practice sessions</li>
+    #         <li>Progress tracking</li>
+    #     </ul>
+    # </div>
+    #
+    # <div class="section">
+    #     <h2 class="header">Contact Us</h2>
+    #     <p>Have questions or feedback? We'd love to hear from you!</p>
+    # </div>
+    # """,
+    #     unsafe_allow_html=True,
+    # )
     st.markdown(
         """
-    <div class="section">
-        <a class="link" href="About_Us">About</a> | 
-        <a class="link" href="#features">Features</a> | 
-        <a class="link" href="#contact">Contact</a>
-    </div>
+        <style>
+            body {
+                color: #fff; /* White text color */
+                background-color: #000; /* Black background */
+            }
+            .section {
+                margin: 10px;
+                padding: 20px;
+                border-radius: 10px;
+                background: #333; /* Dark grey background for the sections */
+                box-shadow: 0 4px 8px rgba(255,255,255,0.1); /* Subtle white shadow for depth */
+            }
+            .header {
+                color: #00BFFF; 
+                font-family: 'Arial', sans-serif;
+            }
+            ul {
+                list-style-type: none;
+                padding: 0;
+            }
+            ul li:before {
+                content: "•";
+                color: #00BFFF; 
+                font-weight: bold;
+                display: inline-block;
+                width: 1em;
+                margin-left: -1em;
+            }
+            ul li {
+                margin-bottom: 5px;
+                color: #fff; /* Khaki color for list text to be soft yet readable on dark backgrounds */
+            }
+        </style>
 
-    <div class="section">
-        <h2 class="header">Master Sign Language Effortlessly</h2>
-        <p>SignSense is an innovative web application designed for individuals who are mute or communicate primarily through sign language. Similar to popular language learning platforms like DuoLingo, SignSense aims to provide an interactive and engaging way for users to learn and practice sign language.</p>
+        <div class="section">
+            <h2 class="header">Master Sign Language Effortlessly</h2>
+            <p>SignSense is an innovative web application designed for individuals who are mute or communicate primarily through sign language. Similar to popular language learning platforms like DuoLingo, SignSense aims to provide an interactive and engaging way for users to learn and practice sign language.</p>
+        </div>
 
-    </div>
+        <div class="section">
+            <h2 class="header">About SignSense</h2>
+            <p>SignSense is revolutionizing the way we learn and practice sign language. Powered by cutting-edge technology, SignSense utilizes OpenCV for image processing and MediaPipe action detection, ensuring an accurate and seamless learning experience.</p>
+        </div>
 
-    <div class="section">
-        <h2 class="header">About SignSense</h2>
-        <p>SignSense is revolutionizing the way we learn and practice sign language. Powered by cutting-edge technology, SignSense utilizes OpenCV for image processing and MediaPipe action detection, ensuring an accurate and seamless learning experience.</p>
-    </div>
+        <div class="section">
+            <h2 class="header">Features</h2>
+            <ul>
+                <li>Interactive lessons</li>
+                <li>Real-time feedback</li>
+                <li>Engaging practice sessions</li>
+                <li>Progress tracking</li>
+            </ul>
+        </div>
 
-    <div class="section">
-        <h2 class="header">Features</h2>
-        <ul>
-            <li>Interactive lessons</li>
-            <li>Real-time feedback</li>
-            <li>Engaging practice sessions</li>
-            <li>Progress tracking</li>
-        </ul>
-    </div>
-
-    <div class="section">
-        <h2 class="header">Contact Us</h2>
-        <p>Have questions or feedback? We'd love to hear from you!</p>
-    </div>
-    """,
+        <div class="section">
+            <h2 class="header">Contact Us</h2>
+            <p>Have questions or feedback? We'd love to hear from you!</p>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
