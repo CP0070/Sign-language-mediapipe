@@ -92,7 +92,7 @@ while True and st.session_state.page == "learnpage":
         )
 
         if prob == 100:
-            st.balloons()
+            st.toast("Letter Recognized",icon="🎉")
 
             video_placeholder.empty()
             # WORD_LIST[current_word_index] # Aroosh

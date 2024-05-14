@@ -1,4 +1,3 @@
-import subprocess
 import csv
 import cv2
 import streamlit as st
@@ -12,50 +11,13 @@ from utils import CvFpsCalc
 from collections import Counter
 from main import draw_landmarks, draw_info_text ,draw_info
 
-st.markdown("""
-        <style>img {
-        border-radius: 1rem;
-        }</style>""",unsafe_allow_html=True)
+# def draw_info(image, landmarks, info_text):
+#
+#     return image
 
 def main():
-    st.title("👋 Hand Gesture Recognition 👋")
-
-    # Add a colorful and engaging description
-    st.markdown(
-        """
-        Welcome to Hand Gesture Recognition! 🎉🤩
-
-        This app allows you to predict hand gestures using trained models. Fun fact: Did you know that hand gestures
-        can convey emotions, commands, and even cultural meanings?
-
-        Choose an option below:
-        """
-    )
-
-    # Create columns for layout
-    col1, col2 = st.columns([2, 1])
-
-    with col1:
-        if st.button("🔮 Predict"):
-            demo()
-        elif st.button("🧤 Gloves"):
-            monitor_sensor_data()
-        # Define functions for Predict and Gloves options
-
-    with col2:
-        # Display an image showing examples of hand gestures
-        st.image("https://github.com/githubhosting/ds/assets/126514044/125a0609-2cc6-49aa-9578-b8fe6cdca321", caption="Examples of Hand Gestures",width=400)
-
-def predict_gestures():
-    st.write("Running prediction...")
-    process = subprocess.Popen(["python", "main.py"], stdout=subprocess.PIPE)
-    output, error = process.communicate()
-    st.write(output.decode("utf-8"))
-    if error:
-        st.error(error.decode("utf-8"))
-
-def demo():
-    st.write("Hand Gesture Recognition")
+    st.set_page_config(page_title="Hand Gesture Recognition")
+    st.title("Hand Gesture Recognition")
     stframe = st.empty()
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
@@ -82,11 +44,11 @@ def demo():
     finger_gesture_history = deque(maxlen=history_length)
 
     with mp_hands.Hands(
-            static_image_mode=False,
-            max_num_hands=2,
-            model_complexity=1,
-            min_detection_confidence=0.8,
-            min_tracking_confidence=0.6
+        static_image_mode=False,
+        max_num_hands=2,
+        model_complexity=1,
+        min_detection_confidence=0.8,
+        min_tracking_confidence=0.6
     ) as hands:
         while True:
             success, image = cap.read()
@@ -142,13 +104,6 @@ def demo():
 
     cap.release()
     cv2.destroyAllWindows()
-def monitor_sensor_data():
-    st.write("Starting gloves for real-time gesture recognition...")
-    process = subprocess.Popen(["python", "model/sensor_classifier/Sensor_data_client.py"], stdout=subprocess.PIPE)
-    output, error = process.communicate()
-    st.write(output.decode("utf-8"))
-    if error:
-        st.error(error.decode("utf-8"))
 
 if __name__ == "__main__":
     main()
