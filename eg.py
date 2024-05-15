@@ -70,7 +70,7 @@ def main():
     cvFpsCalc = CvFpsCalc(buffer_len=10)
     accumulated_gestures = []  # List to store gesture texts
     last_gesture_time = time.time()
-    gesture_cooldown = 1.0  # 1 second cooldown between gestures
+    gesture_cooldown = 2.0  # 1 second cooldown between gestures
 
     keypoint_classifier = KeyPointClassifier()
     point_history_classifier = PointHistoryClassifier()
