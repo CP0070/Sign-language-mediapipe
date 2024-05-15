@@ -8,7 +8,7 @@ def client_program():
     port = 2222
 
     # Connect to the server on local computer
-    server_ip = '172.20.10.2'  # Ensure this is the IP where the server is running
+    server_ip = '192.168.1.19'  # this is the IP where the server is running
     s.connect((server_ip, port))
     print("connection established")
 
