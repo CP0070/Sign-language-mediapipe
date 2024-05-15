@@ -5,11 +5,12 @@ def client_program():
     s = socket.socket()
 
     # Define the port on which you want to connect (match this with the server's port)
-    port = 12345
+    port = 2222
 
     # Connect to the server on local computer
-    server_ip = '192.168.1.9'  # Ensure this is the IP where the server is running
+    server_ip = '172.20.10.2'  # Ensure this is the IP where the server is running
     s.connect((server_ip, port))
+    print("connection established")
 
     try:
         while True:

@@ -4,12 +4,13 @@ import streamlit as st
 import mediapipe as mp
 import numpy as np
 from util import *
+import time
 from model.keypoint_classifier.keypoint_classifier import *
 from model.point_history_classifier.pont_history_classifier import *
 from collections import deque
 from utils import CvFpsCalc
 from collections import Counter
-from main import draw_landmarks, draw_info_text ,draw_info
+from main import draw_landmarks, draw_info_text ,draw_info,draw_point_history
 
 # def draw_info(image, landmarks, info_text):
 #
@@ -19,14 +20,19 @@ def main():
     st.set_page_config(page_title="Hand Gesture Recognition")
     st.title("Hand Gesture Recognition")
     stframe = st.empty()
+
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
     mp_hands = mp.solutions.hands
-
+    cvFpsCalc = CvFpsCalc(buffer_len=10)
     cap = cv2.VideoCapture(0)  # Replace 0 with the appropriate camera index
     if not cap.isOpened():
         st.error("Could not open the camera.")
         return
+
+    accumulated_gestures = []  # List to store gesture texts
+    last_gesture_time = time.time()
+    gesture_cooldown = 1.0  # 1 second cooldown between gestures
 
     # Initialize classifiers and label lists
     keypoint_classifier = KeyPointClassifier()
@@ -44,13 +50,14 @@ def main():
     finger_gesture_history = deque(maxlen=history_length)
 
     with mp_hands.Hands(
-        static_image_mode=False,
+        static_image_mode=True,
         max_num_hands=2,
         model_complexity=1,
         min_detection_confidence=0.8,
         min_tracking_confidence=0.6
     ) as hands:
         while True:
+            fps = cvFpsCalc.get()
             success, image = cap.read()
             if not success:
                 st.warning("Could not read the camera frame.")
@@ -100,7 +107,32 @@ def main():
                     image = draw_landmarks(image, landmark_list)
                     image = draw_info_text(image, point_history_classifier_labels[most_common_fg_id[0][0]])
 
-                    stframe.image(image, channels="BGR")
+                    # print(info_text)
+                    # accumulation
+                    gesture_detected = info_text
+                    if gesture_detected and time.time() - last_gesture_time > gesture_cooldown:
+                        accumulated_gestures.append(gesture_detected)
+                        last_gesture_time = time.time()
+
+
+            else:
+                point_history.append([0, 0])
+
+                new_frame_time = time.time()
+
+                image = draw_point_history(image, point_history)
+                    # Flip the image horizontally for a selfie-view display.
+                image = cv2.flip(image, 1)
+
+                # Display the accumulated gestures
+            display_text = ' '.join(filter(None, accumulated_gestures)).strip()
+            text_position = (10, image.shape[0] - 10)
+
+            cv2.putText(image, "FPS:" + str(fps), (7, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 3,
+                            cv2.LINE_AA)
+            cv2.putText(image, display_text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+            stframe.image(image, channels="BGR")
 
     cap.release()
     cv2.destroyAllWindows()
