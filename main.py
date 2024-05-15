@@ -36,6 +36,22 @@ def draw_info(image, landmarks, info_text):
 
     return image
 
+def update_gestures(accumulated_gestures, last_gesture_time, gesture, gesture_cooldown):
+    current_time = time.time()
+    if gesture and (current_time - last_gesture_time > gesture_cooldown):
+        accumulated_gestures.append((gesture, current_time))
+        last_gesture_time = current_time
+
+    # Filter out old gestures based on the cooldown period
+    gesture_display_time = 20  # Gestures older than 5 seconds will be cleared from the screen
+    accumulated_gestures = [item for item in accumulated_gestures if current_time - item[1] < gesture_display_time]
+
+    # Prepare display text
+    display_text = ' '.join(gesture for gesture, _ in accumulated_gestures).strip()
+    return accumulated_gestures, last_gesture_time, display_text
+
+
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -53,9 +69,9 @@ def main():
     # For webcam input:
     cap = cv2.VideoCapture(args.device)
     cvFpsCalc = CvFpsCalc(buffer_len=10)
-    accumulated_gestures = []  # List to store gesture texts
+    accumulated_gestures = deque()  # List to store gesture texts
     last_gesture_time = time.time()
-    gesture_cooldown = 1.0  # 1 second cooldown between gestures
+    gesture_cooldown = 2.0  # 1 second cooldown between gestures
 
     keypoint_classifier = KeyPointClassifier()
     point_history_classifier = PointHistoryClassifier()
@@ -103,6 +119,8 @@ def main():
             image.flags.writeable = False
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             results = hands.process(image)
+            display_text = ""
+
 
             # Draw the hand annotations on the image.
             image.flags.writeable = True
@@ -160,9 +178,8 @@ def main():
                     #print(info_text)
                     #accumulation
                     gesture_detected = info_text
-                    if gesture_detected and time.time() - last_gesture_time > gesture_cooldown:
-                        accumulated_gestures.append(gesture_detected)
-                        last_gesture_time = time.time()
+                    accumulated_gestures, last_gesture_time, display_text = update_gestures(
+                        accumulated_gestures, last_gesture_time, gesture_detected, gesture_cooldown)
 
 
 
@@ -191,12 +208,13 @@ def main():
 
 
 
-                # Display the accumulated gestures
-            display_text = ' '.join(filter(None,accumulated_gestures)).strip()
-            text_position = (10, image.shape[0] - 10)
+            # Display the accumulated gestures
+            #display_text = ' '.join(filter(None,accumulated_gestures)).strip()
+            #text_position = (10, image.shape[0] - 10)
+            cv2.putText(image, display_text, (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
             cv2.putText(image, "FPS:" + str(fps), (7, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 3, cv2.LINE_AA)
-            cv2.putText(image, display_text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            #cv2.putText(image, display_text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
 
             cv2.imshow('SLRS', image)
@@ -418,6 +436,7 @@ def draw_info_text(image,finger_gesture_text):
         cv2.putText(image, "Finger Gesture:" + finger_gesture_text, (10, 60),
                    cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2,
                    cv2.LINE_AA)
+
 
     return image
 

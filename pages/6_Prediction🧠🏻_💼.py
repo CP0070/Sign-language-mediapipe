@@ -11,7 +11,7 @@ from model.point_history_classifier.pont_history_classifier import *
 from collections import deque
 from utils import CvFpsCalc
 from collections import Counter
-from main import draw_landmarks, draw_info_text ,draw_info,draw_point_history
+from main import draw_landmarks, draw_info_text ,draw_info,draw_point_history,update_gestures
 from Sensor_data_client import *
 
 st.markdown("""
@@ -90,9 +90,9 @@ def demo():
     if not cap.isOpened():
         st.error("Could not open the camera.")
         return
-    accumulated_gestures = []  # List to store gesture texts
+    accumulated_gestures = deque()  # List to store gesture texts
     last_gesture_time = time.time()
-    gesture_cooldown = 1.0  # 1 second cooldown between gestures
+    gesture_cooldown = 2.0  # 1 second cooldown between gestures
 
     # Initialize classifiers and label lists
     keypoint_classifier = KeyPointClassifier()
@@ -127,8 +127,11 @@ def demo():
             image.flags.writeable = False
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             results = hands.process(image)
+
+            display_text = ""
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
 
             if results.multi_hand_landmarks:
                 for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
@@ -171,28 +174,32 @@ def demo():
                     # print(info_text)
                     # accumulation
                     gesture_detected = info_text
-                    if gesture_detected and time.time() - last_gesture_time > gesture_cooldown:
-                        accumulated_gestures.append(gesture_detected)
-                        last_gesture_time = time.time()
+                    accumulated_gestures, last_gesture_time, display_text = update_gestures(
+                        accumulated_gestures, last_gesture_time, gesture_detected, gesture_cooldown)
 
-                    else:
-                        point_history.append([0, 0])
 
-                        new_frame_time = time.time()
+            else:
+                point_history.append([0, 0])
 
-                        image = draw_point_history(image, point_history)
-                        # Flip the image horizontally for a selfie-view display.
-                        #image = cv2.flip(image, 1)
+            #new_frame_time = time.time()
 
-                        # Display the accumulated gestures
-                    display_text = ' '.join(filter(None, accumulated_gestures)).strip()
-                    text_position = (10, image.shape[0] - 10)
+            image = draw_point_history(image, point_history)
+            # Flip the image horizontally for a selfie-view display.
+            image = cv2.flip(image, 1)
 
-                    cv2.putText(image, "FPS:" + str(fps), (7, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 3,
+
+
+            # Display the accumulated gestures
+            #display_text = ' '.join(filter(None, accumulated_gestures)).strip()
+            #text_position = (10, image.shape[0] - 10)
+            cv2.putText(image, display_text, (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+
+            cv2.putText(image, "FPS:" + str(fps), (7, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 3,
                                 cv2.LINE_AA)
-                    cv2.putText(image, display_text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            #cv2.putText(image, display_text, text_position, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-                    stframe.image(image, channels="BGR")
+            stframe.image(image, channels="BGR")
 
     cap.release()
     cv2.destroyAllWindows()
