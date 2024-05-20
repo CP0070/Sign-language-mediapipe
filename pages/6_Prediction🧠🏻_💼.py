@@ -192,7 +192,7 @@ def demo():
             # Display the accumulated gestures
             #display_text = ' '.join(filter(None, accumulated_gestures)).strip()
             #text_position = (10, image.shape[0] - 10)
-            cv2.putText(image, display_text, (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(image, display_text, (20, 450), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
 
             cv2.putText(image, "FPS:" + str(fps), (7, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 3,
